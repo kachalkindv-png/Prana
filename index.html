@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Пранаяма 1‑4‑2 — Без диктора (бинауральные)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{
+    --bg:#0b0b0b; --fg:#f6e7b4; --muted:#b7a97a; --accent:#ffd76a; --accent-dim:#5a481a;
+    --inh:#7fd88a; --hold:#ffd76a; --exh:#85b7ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);
+    font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Inter,Arial}
+  .wrap{min-height:100%;display:flex;flex-direction:column;gap:14px;padding:16px}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:900px){ .grid{grid-template-columns:1.2fr .8fr} }
+  .card{border:1px solid var(--accent-dim);border-radius:14px;padding:14px;background:rgba(255,215,106,.04)}
+  .title{font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-size:13px;margin-bottom:6px}
+  .block{font-size:20px;text-align:center}
+  .count{font-size:84px;line-height:1;font-weight:900;text-shadow:0 0 24px rgba(255,215,106,.25);text-align:center}
+  .phase{font-size:16px;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+  .phase.inh{color:var(--inh)} .phase.hold{color:var(--hold)} .phase.exh{color:var(--exh)}
+  .bars{display:flex;flex-direction:column;gap:10px}
+  .bar{height:10px;background:linear-gradient(90deg, rgba(255,215,106,.15), rgba(255,215,106,.05));
+       border-radius:999px;border:1px solid rgba(255,215,106,.25);overflow:hidden}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg, var(--accent), #f5c542);
+       box-shadow:0 0 12px rgba(255,215,106,.35) inset}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .row.center{justify-content:center}
+  button{appearance:none;border:1px solid var(--accent-dim);background:transparent;color:var(--fg);
+          padding:10px 14px;border-radius:12px;font-weight:800}
+  button.primary{background:linear-gradient(180deg,#2a220b,#151006);border-color:#3a2f0f;
+                 box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  button:disabled{opacity:.45}
+  input[type=number]{background:transparent;border:1px solid var(--accent-dim);color:var(--fg);
+                     border-radius:10px;padding:8px 10px}
+  label{color:var(--muted);font-size:14px}
+  .pill{display:inline-block;border:1px solid var(--accent-dim);border-radius:999px;padding:6px 10px;
+        color:var(--muted);font-size:13px}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .kpis .pill b{color:var(--fg)}
+  .sec{font-size:12px;color:var(--muted)}
+  .list{display:flex;flex-direction:column;gap:8px}
+  .hr{height:1px;background:rgba(255,215,106,.18);margin:10px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <div class="title">Плеер</div>
+      <div class="block" id="blockName">—</div>
+      <div class="count mono" id="count">00:00</div>
+      <div class="phase" id="phase">Готов</div>
+      <div class="bars" style="margin:8px 0 12px;">
+        <div class="bar" aria-label="Фаза"><div class="fill" id="phaseFill"></div></div>
+        <div class="bar" aria-label="Блок"><div class="fill" id="blockFill"></div></div>
+        <div class="bar" aria-label="Сессия"><div class="fill" id="totalFill"></div></div>
+      </div>
+      <div class="kpis">
+        <span class="pill">В блоке: <b id="blockRemain">—</b></span>
+        <span class="pill">До конца: <b id="totalRemain">—</b></span>
+        <span class="pill">Циклы: <b id="cyclesDone">0</b></span>
+      </div>
+      <div class="row center" style="margin-top:10px;">
+        <button id="startBtn" class="primary">▶️ Старт</button>
+        <button id="pauseBtn" disabled>⏸ Пауза</button>
+        <button id="resetBtn" disabled>⟲ Сброс</button>
+        <label class="row"><input id="tonesOn" type="checkbox" checked> Сигналы</label>
+        <label class="row"><input id="binauralOn" type="checkbox" checked> Бинауральные</label>
+        <label class="row"><input id="vibeOn"  type="checkbox" checked> Вибро</label>
+      </div>
+      <div class="sec" style="text-align:center;margin-top:8px;">
+        Фазы различаются по <b>цвету</b>, <b>сигналам</b>, <b>вибро</b> и <b>бинауральным частотам</b>. Используй наушники.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title">Настройки</div>
+      <div class="list">
+        <div><b>1) Разминка</b></div>
+        <div class="row">
+          <label>Минут: <input id="wMin" type="number" min="1" step="1" value="10"></label>
+          <label>Вдох (1): <input id="wIn" type="number" min="1" step="1" value="10"></label>
+          <label>Задержка (4): <input id="wHold" type="number" min="0" step="1" value="40"></label>
+          <label>Выдох (2): <input id="wEx" type="number" min="0" step="1" value="20"></label>
+          <button id="w142" class="primary">1‑4‑2</button>
+        </div>
+
+        <div><b>2) Работа (чередование)</b></div>
+        <div class="row">
+          <label>Минут: <input id="rMin" type="number" min="1" step="1" value="10"></label>
+          <label>A вдох: <input id="rAIn" type="number" min="1" step="1" value="11"></label>
+          <label>B вдох: <input id="rBIn" type="number" min="1" step="1" value="12"></label>
+          <label>A циклов: <input id="rAcount" type="number" min="1" step="1" value="2"></label>
+          <label>B циклов: <input id="rBcount" type="number" min="1" step="1" value="1"></label>
+          <button id="r142" class="primary">1‑4‑2 A/B</button>
+        </div>
+
+        <div><b>3) Челлендж</b></div>
+        <div class="row">
+          <label>Минут: <input id="cMin" type="number" min="1" step="1" value="5"></label>
+          <label>Вдох: <input id="cIn" type="number" min="1" step="1" value="13"></label>
+          <label>Задержка: <input id="cHold" type="number" min="0" step="1" value="52"></label>
+          <label>Выдох: <input id="cEx" type="number" min="0" step="1" value="26"></label>
+          <button id="c142" class="primary">1‑4‑2</button>
+        </div>
+
+        <div><b>4) Тест</b></div>
+        <div class="row">
+          <label>Циклов: <input id="tCycles" type="number" min="1" step="1" value="3"></label>
+          <label>Вдох: <input id="tIn" type="number" min="1" step="1" value="14"></label>
+          <label>Задержка: <input id="tHold" type="number" min="0" step="1" value="56"></label>
+          <label>Выдох: <input id="tEx" type="number" min="0" step="1" value="28"></label>
+          <button id="t142" class="primary">1‑4‑2</button>
+        </div>
+
+        <div class="hr"></div>
+        <div><b>Бинауральные ритмы (Гц)</b></div>
+        <div class="row">
+          <label>Вдох: <input id="bbInhale" type="number" min="0" step="0.5" value="10"></label>
+          <label>Задержка: <input id="bbHold" type="number" min="0" step="0.5" value="6"></label>
+          <label>Выдох: <input id="bbExhale" type="number" min="0" step="0.5" value="3"></label>
+          <label>Несущая: <input id="bbCarrier" type="number" min="100" step="10" value="220"></label>
+          <label>Громкость: <input id="bbGain" type="number" min="0" max="1" step="0.05" value="0.05"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// inputs
+const wMin=document.getElementById('wMin'), wIn=document.getElementById('wIn'), wHold=document.getElementById('wHold'), wEx=document.getElementById('wEx');
+const rMin=document.getElementById('rMin'), rAIn=document.getElementById('rAIn'), rBIn=document.getElementById('rBIn'), rAcount=document.getElementById('rAcount'), rBcount=document.getElementById('rBcount');
+const cMin=document.getElementById('cMin'), cIn=document.getElementById('cIn'), cHold=document.getElementById('cHold'), cEx=document.getElementById('cEx');
+const tCycles=document.getElementById('tCycles'), tIn=document.getElementById('tIn'), tHold=document.getElementById('tHold'), tEx=document.getElementById('tEx');
+const bbInhale=document.getElementById('bbInhale'), bbHold=document.getElementById('bbHold'), bbExhale=document.getElementById('bbExhale'), bbCarrier=document.getElementById('bbCarrier'), bbGain=document.getElementById('bbGain');
+document.getElementById('w142').onclick=()=>{const x=+wIn.value||0; wHold.value=x*4; wEx.value=x*2;}
+document.getElementById('r142').onclick=()=>{alert("Шаблоны A/B будут 1‑4‑2 автоматически: задержка=×4, выдох=×2 от вдоха.");}
+document.getElementById('c142').onclick=()=>{const x=+cIn.value||0; cHold.value=x*4; cEx.value=x*2;}
+document.getElementById('t142').onclick=()=>{const x=+tIn.value||0; tHold.value=x*4; tEx.value=x*2;}
+
+// player DOM
+const blockNameEl=document.getElementById('blockName'), countEl=document.getElementById('count'), phaseEl=document.getElementById('phase');
+const phaseFill=document.getElementById('phaseFill'), blockFill=document.getElementById('blockFill'), totalFill=document.getElementById('totalFill');
+const blockRemainEl=document.getElementById('blockRemain'), totalRemainEl=document.getElementById('totalRemain'), cyclesDoneEl=document.getElementById('cyclesDone');
+const startBtn=document.getElementById('startBtn'), pauseBtn=document.getElementById('pauseBtn'), resetBtn=document.getElementById('resetBtn');
+const tonesOn=document.getElementById('tonesOn'), binauralOn=document.getElementById('binauralOn'), vibeOn=document.getElementById('vibeOn');
+
+// audio helpers
+let audioCtx;
+function ensureAudio(){ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
+function beep(freq=660,ms=160, vol=0.15){
+  if(!tonesOn.checked) return;
+  try{
+    const ctx=ensureAudio();
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sine'; o.frequency.value=freq; o.connect(g); g.connect(ctx.destination);
+    const t=ctx.currentTime; g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol, t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+ms/1000);
+    o.start(t); o.stop(t+ms/1000+.02);
+  }catch(e){}
+}
+function phaseCue(name){
+  if(!tonesOn.checked) return;
+  const ctx=ensureAudio();
+  if(name==="Вдох"){
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.connect(g); g.connect(ctx.destination);
+    const t=ctx.currentTime;
+    o.frequency.setValueAtTime(380,t); o.frequency.exponentialRampToValueAtTime(520,t+0.20);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.18,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+    o.start(t); o.stop(t+0.25);
+  }else if(name==="Задержка"){
+    beep(660,120,0.12); setTimeout(()=>beep(660,120,0.12), 160);
+  }else{
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.connect(g); g.connect(ctx.destination);
+    const t=ctx.currentTime;
+    o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(380,t+0.25);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.16,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.27);
+    o.start(t); o.stop(t+0.30);
+  }
+}
+
+// haptics
+function vib(pattern){ if(!vibeOn.checked || !('vibrate' in navigator)) return;
+  if(Array.isArray(pattern)) navigator.vibrate(pattern); else navigator.vibrate(pattern||40);
+}
+function phaseHaptic(name){
+  if(name==="Вдох") vib(30);
+  else if(name==="Задержка") vib([30,60,30]);
+  else vib(80);
+}
+
+// binaural
+let currentBinaural={leftOsc:null,rightOsc:null,leftGain:null,rightGain:null,master:null};
+function stopBinaural(){
+  const ctx=audioCtx; if(!ctx) return;
+  const {leftOsc,rightOsc,leftGain,rightGain,master}=currentBinaural;
+  try{
+    const t=ctx.currentTime;
+    [leftGain,rightGain,master].forEach(g=>{ if(g){ g.gain.cancelScheduledValues(t); g.gain.setTargetAtTime(0.0001,t,0.15);} });
+    [leftOsc,rightOsc].forEach(o=>{ if(o){ try{o.stop(t+0.2);}catch(e){} } });
+  }catch(e){}
+  currentBinaural={leftOsc:null,rightOsc:null,leftGain:null,rightGain:null,master:null};
+}
+function startBinaural(beatHz, carrier=220, gainValue=0.05){
+  if(!binauralOn.checked) return;
+  try{
+    const ctx=ensureAudio(); stopBinaural();
+    const master=ctx.createGain(); master.gain.value=0.0001;
+    const merger=ctx.createChannelMerger(2);
+    const leftOsc=ctx.createOscillator(), rightOsc=ctx.createOscillator();
+    const leftGain=ctx.createGain(), rightGain=ctx.createGain();
+    leftGain.gain.value=1; rightGain.gain.value=1;
+    leftOsc.type='sine'; rightOsc.type='sine';
+    leftOsc.frequency.value=carrier - beatHz/2; rightOsc.frequency.value=carrier + beatHz/2;
+    leftOsc.connect(leftGain); rightOsc.connect(rightGain);
+    leftGain.connect(merger,0,0); rightGain.connect(merger,0,1);
+    merger.connect(master); master.connect(ctx.destination);
+    const t=ctx.currentTime;
+    master.gain.setValueAtTime(0.0001,t); master.gain.exponentialRampToValueAtTime(gainValue, t+0.3);
+    leftOsc.start(t); rightOsc.start(t);
+    currentBinaural={leftOsc,rightOsc,leftGain,rightGain,master};
+  }catch(e){}
+}
+
+// plan
+function buildPlan(){
+  const patt=[];
+  for(let i=0;i<+rAcount.value;i++) patt.push({in:+rAIn.value, hold:+rAIn.value*4, ex:+rAIn.value*2});
+  for(let i=0;i<+rBcount.value;i++) patt.push({in:+rBIn.value, hold:+rBIn.value*4, ex:+rBIn.value*2});
+  return [
+    { kind:"duration", name:"Разминка", minutes:+wMin.value, inhale:+wIn.value, hold:+wHold.value, exhale:+wEx.value },
+    { kind:"patternDur", name:"Работа", minutes:+rMin.value, pattern:patt },
+    { kind:"duration", name:"Челлендж", minutes:+cMin.value, inhale:+cIn.value, hold:+cHold.value, exhale:+cEx.value },
+    { kind:"cycles", name:"Тест", cycles:+tCycles.value, inhale:+tIn.value, hold:+tHold.value, exhale:+tEx.value },
+  ];
+}
+
+// state & flow
+let PLAN=buildPlan();
+let running=false, paused=false, timerId=null;
+let blockIdx=0, patternPos=0, phaseIdx=0;
+let phaseLeft=0, phaseTotal=0, blockLeft=0, blockTotal=0, totalElapsed=0, cyclesDone=0, totalTarget=0;
+
+function fmt(s){ s=Math.max(0,Math.ceil(s)); const m=String(Math.floor(s/60)).padStart(2,'0'); const x=String(s%60).padStart(2,'0'); return `${m}:${x}`; }
+function setPhaseClass(name){
+  phaseEl.classList.remove('inh','hold','exh');
+  if(name==="Вдох") phaseEl.classList.add('inh');
+  else if(name==="Задержка") phaseEl.classList.add('hold');
+  else phaseEl.classList.add('exh');
+}
+function setPhase(name,sec){
+  phaseEl.textContent=name; setPhaseClass(name);
+  phaseLeft=sec; phaseTotal=sec; countEl.textContent=fmt(sec); phaseFill.style.width='0%';
+  const beat = (name==="Вдох")?+bbInhale.value : (name==="Задержка"?+bbHold.value:+bbExhale.value);
+  startBinaural(beat, +bbCarrier.value, +bbGain.value);
+  phaseCue(name); phaseHaptic(name);
+}
+function getDur(){
+  const b=PLAN[blockIdx];
+  if(b.kind==="patternDur"){
+    const p=b.pattern[patternPos % b.pattern.length];
+    return {inh:p.in, hold:p.hold, ex:p.ex};
+  }
+  return {inh:b.inhale, hold:b.hold, ex:b.exhale};
+}
+function startBlock(i){
+  const b=PLAN[i]; blockNameEl.textContent=b.name;
+  blockLeft=(b.kind==="cycles")?0:Math.round((b.minutes||0)*60); blockTotal=blockLeft;
+  patternPos=0; phaseIdx=0;
+  const d=getDur(); setPhase("Вдох", d.inh); updateHUD();
+}
+function nextPhaseOrCycle(){
+  const d=getDur(); phaseIdx=(phaseIdx+1)%3;
+  const sec=[d.inh,d.hold,d.ex][phaseIdx];
+  setPhase(["Вдох","Задержка","Выдох"][phaseIdx], sec);
+}
+function endCycle(){
+  cyclesDone+=1; cyclesDoneEl.textContent=String(cyclesDone);
+  const b=PLAN[blockIdx];
+  if(b.kind==="patternDur"){ patternPos=(patternPos+1)%b.pattern.length; }
+  if(b.kind==="cycles"){
+    b._left=(b._left??b.cycles)-1; if(b._left<=0){ nextBlock(); return; }
+  }
+  if((b.kind==="duration"||b.kind==="patternDur") && blockLeft<=0){ nextBlock(); return; }
+}
+function nextBlock(){
+  stopBinaural(); blockIdx+=1;
+  if(blockIdx>=PLAN.length){ finish(); return; }
+  startBlock(blockIdx);
+}
+function finish(){
+  running=false; paused=false; clearTimeout(timerId);
+  startBtn.disabled=false; pauseBtn.disabled=true; resetBtn.disabled=false;
+  stopBinaural();
+  phaseEl.textContent="Готово"; countEl.textContent="00:00"; blockNameEl.textContent="Сессия завершена";
+  phaseFill.style.width=blockFill.style.width=totalFill.style.width='100%';
+}
+function updateHUD(){
+  countEl.textContent=fmt(phaseLeft);
+  phaseFill.style.width=`${Math.max(0,Math.min(100,100*(1-phaseLeft/Math.max(1,phaseTotal))))}%`;
+  const b=PLAN[blockIdx]; let blockPct=0, txt="—";
+  if(b.kind==="cycles"){
+    const left=b._left??b.cycles; txt=left+" циклов"; blockPct=100*(1-left/Math.max(1,b.cycles));
+  }else{
+    txt=fmt(Math.max(0,blockLeft)); blockPct=100*(1-blockLeft/Math.max(1,blockTotal));
+  }
+  blockFill.style.width=`${Math.max(0,Math.min(100,blockPct))}%`; blockRemainEl.textContent=txt;
+  const remain=Math.max(0,totalTarget-totalElapsed); totalRemainEl.textContent=fmt(remain);
+  totalFill.style.width=`${Math.max(0,Math.min(100,100*totalElapsed/Math.max(1,totalTarget)))}%`;
+}
+function tick(){
+  if(!running||paused) return;
+  phaseLeft-=1; totalElapsed+=1;
+  const b=PLAN[blockIdx]; if(b.kind!=="cycles"){ blockLeft=Math.max(0,blockLeft-1); }
+  updateHUD();
+  if(phaseLeft<=0){
+    if(phaseIdx===2){ endCycle(); if(!running) return; }
+    nextPhaseOrCycle();
+  }
+  timerId=setTimeout(tick,1000);
+}
+
+// controls
+function recalc(){ PLAN=buildPlan(); }
+[wMin,wIn,wHold,wEx,rMin,rAIn,rBIn,rAcount,rBcount,cMin,cIn,cHold,cEx,tCycles,tIn,tHold,tEx]
+  .forEach(inp=>inp.addEventListener('change', recalc));
+
+let wakeLock=null; async function lockScreen(){ try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){} }
+function start(){
+  if(running) return;
+  try{ ensureAudio(); }catch(e){}
+  running=true; paused=false;
+  startBtn.disabled=true; pauseBtn.disabled=false; resetBtn.disabled=false;
+  blockIdx=0; patternPos=0; phaseIdx=0; totalElapsed=0; cyclesDone=0; cyclesDoneEl.textContent="0";
+  PLAN.forEach(b=> delete b._left);
+  totalTarget=(PLAN[0].minutes+PLAN[1].minutes+PLAN[2].minutes)*60 + PLAN[3].cycles*(PLAN[3].inhale+PLAN[3].hold+PLAN[3].exhale);
+  lockScreen();
+  startBlock(0);
+  clearTimeout(timerId); timerId=setTimeout(tick,1000);
+}
+function pause(){
+  if(!running) return;
+  paused=!paused;
+  pauseBtn.textContent=paused?"▶️ Продолжить":"⏸ Пауза";
+  if(!paused){ clearTimeout(timerId); timerId=setTimeout(tick,1000); }
+}
+function reset(){
+  running=false; paused=false; clearTimeout(timerId);
+  startBtn.disabled=false; pauseBtn.disabled=true; resetBtn.disabled=true;
+  stopBinaural(); blockNameEl.textContent="—"; phaseEl.textContent="Готов"; phaseEl.classList.remove('inh','hold','exh');
+  phaseFill.style.width=blockFill.style.width=totalFill.style.width="0%"; countEl.textContent="00:00";
+  blockRemainEl.textContent="—"; totalRemainEl.textContent="—"; cyclesDoneEl.textContent="0";
+  if(wakeLock){ try{ wakeLock.release(); }catch(e){} }
+}
+startBtn.addEventListener('click', start);
+pauseBtn.addEventListener('click', pause);
+resetBtn.addEventListener('click', reset);
+</script>
+</body>
+</html>
