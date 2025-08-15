@@ -2,154 +2,247 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Таймер пранаямы 1‑4‑2 — v2 (пресеты, ступени, отчёт)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Пранаяма 1‑4‑2 — Разминка/Работа/Челлендж/Тест</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-  :root { --fg:#111; --bg:#fafafa; --muted:#6b7280; --accent:#2563eb; --ok:#16a34a; --bad:#ef4444; --card: rgba(127,127,127,.08); --bd: rgba(127,127,127,.2); }
-  @media (prefers-color-scheme: dark){
-    :root { --fg:#e5e7eb; --bg:#0b0f14; --muted:#9ca3af; --accent:#60a5fa; --ok:#22c55e; --bad:#f87171; --card: rgba(255,255,255,.06); --bd: rgba(255,255,255,.18); }
+  :root{
+    --bg:#000;
+    --fg:#f6e7b4;
+    --muted:#b7a97a;
+    --accent:#ffd76a;
+    --accent-dim:#5a481a;
+    --ring:#ffec9c;
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;}
-  .wrap{max-width:980px;margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:16px}
-  h1{font-size:22px;margin:0}
-  h2{font-size:18px;margin:0}
-  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .big{font-size:46px;line-height:1.1;font-weight:800;text-align:center;letter-spacing:.5px}
-  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;text-align:center;margin-top:-4px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .row.right{justify-content:flex-end}
-  .row.center{justify-content:center}
-  button{appearance:none;border:none;background:var(--accent);color:white;padding:10px 14px;border-radius:12px;font-weight:700;font-size:15px}
-  button.sec{background:transparent;color:var(--fg);border:1px solid var(--bd)}
-  button.warn{background:var(--bad)}
-  button.ok{background:var(--ok)}
-  button:disabled{opacity:.55}
-  .tog{display:flex;gap:8px;align-items:center;font-size:14px}
-  input[type=checkbox]{width:20px;height:20px}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(127,127,127,.12);font-size:14px}
-  .phase{font-weight:800}
-  .bar{height:10px;background:rgba(127,127,127,.2);border-radius:999px;overflow:hidden}
-  .fill{height:100%;width:0%;background:var(--accent);transition:width .2s linear}
-  .small{font-size:13px;color:var(--muted)}
-  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-  table{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:14px}
-  th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.12em;text-align:left}
-  td{background:rgba(127,127,127,.07);padding:8px;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
-  td:first-child{border-left:1px solid var(--bd);border-top-left-radius:8px;border-bottom-left-radius:8px}
-  td:last-child{border-right:1px solid var(--bd);border-top-right-radius:8px;border-bottom-right-radius:8px}
-  input[type=text], input[type=number], select{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--fg)}
-  .btns{display:flex;gap:6px;flex-wrap:wrap}
-  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .kpi .card{padding:10px;text-align:center}
-  .kpi .big{font-size:28px}
-  canvas{width:100%;max-width:100%;height:220px;background:rgba(127,127,127,.06);border-radius:10px;border:1px solid var(--bd)}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Inter,Arial}
+  .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:18px 16px 26px;gap:14px}
+  .title{font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-size:14px;text-align:center}
+  .block{font-size:20px;color:var(--fg);text-align:center}
+  .count{font-size:80px;line-height:1;font-weight:900;text-shadow:0 0 24px rgba(255,215,106,.25);}
+  .phase{font-size:16px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .bars{width:100%;max-width:760px;display:flex;flex-direction:column;gap:10px}
+  .bar{height:10px;background:linear-gradient(90deg, rgba(255,215,106,.15), rgba(255,215,106,.05));border-radius:999px;border:1px solid rgba(255,215,106,.25);overflow:hidden}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg, var(--accent), #f5c542);box-shadow:0 0 12px rgba(255,215,106,.35) inset}
+  .row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+  button{appearance:none;border:1px solid var(--accent-dim);background:transparent;color:var(--fg);
+          padding:12px 16px;border-radius:14px;font-weight:800;letter-spacing:.02em}
+  button.primary{background:linear-gradient(180deg,#2a220b,#151006);border-color:#3a2f0f;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  button:disabled{opacity:.45}
+  .tog{display:flex;gap:8px;align-items:center;color:var(--muted)}
+  input[type=checkbox]{width:22px;height:22px;accent-color:#f1cf62}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .hint{font-size:12px;color:var(--muted);text-align:center;opacity:.85}
+  .pill{display:inline-block;border:1px solid var(--accent-dim);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:13px}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .kpis .pill b{color:var(--fg)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Таймер пранаямы 1‑4‑2 — v2</h1>
+  <div class="title">Пранаяма 1‑4‑2</div>
+  <div class="block" id="blockName">—</div>
+  <div class="count mono" id="count">00:00</div>
+  <div class="phase" id="phase">Готов</div>
 
-  <div class="card grid" id="playerCard">
-    <div>
-      <div class="big mono" id="count">00:00</div>
-      <div class="label">обратный отсчёт фазы</div>
-      <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
-      <div class="row center" style="margin-top:10px;">
-        <button id="startBtn">▶️ Старт</button>
-        <button id="pauseBtn" class="sec" disabled>⏸ Пауза</button>
-        <button id="resetBtn" class="sec" disabled>⟲ Сброс</button>
-      </div>
-    </div>
-    <div>
-      <div class="row"><span class="pill">Текущая фаза: <span id="phase" class="phase">—</span></span></div>
-      <div class="row"><span class="pill">Следующая: <span id="nextPhase">—</span></span></div>
-      <div class="row"><span class="pill">Блок: <span id="blockName">—</span></span></div>
-      <div class="row"><span class="pill">Осталось в блоке: <span id="blockRemain">—</span></span></div>
-      <div class="row" style="margin-top:10px;">
-        <label class="tog"><input type="checkbox" id="voiceOn" checked> Голос</label>
-        <label class="tog"><input type="checkbox" id="tonesOn" checked> Тоны</label>
-        <label class="tog"><input type="checkbox" id="vibeOn" checked> Вибро</label>
-      </div>
-      <div class="small">Совет: на телефоне нажми «Старт», чтобы активировать звук. Страница может работать офлайн после первой загрузки.</div>
-    </div>
+  <div class="bars">
+    <div class="bar" aria-label="Прогресс фазы"><div class="fill" id="phaseFill"></div></div>
+    <div class="bar" aria-label="Прогресс блока"><div class="fill" id="blockFill"></div></div>
+    <div class="bar" aria-label="Прогресс всей сессии"><div class="fill" id="totalFill"></div></div>
   </div>
 
-  <div class="card" id="editorCard">
-    <div class="row right">
-      <div class="row" style="margin-right:auto;">
-        <input id="presetInhale" type="number" min="1" step="1" placeholder="Вдох (сек)" style="width:120px">
-        <button id="applyPreset" class="ok">Пресет 1‑4‑2 для выделенных</button>
-        <button id="addFromPreset" class="sec">＋ Добавить блок из пресета</button>
-      </div>
-      <button id="addRow" class="ok">＋ Добавить пустой блок</button>
-      <button id="savePlan" class="sec">💾 Сохранить</button>
-      <button id="loadPlan" class="sec">⭳ Загрузить (JSON)</button>
-      <button id="exportPlan" class="sec">⭱ Экспорт (JSON)</button>
-      <button id="resetDefault" class="warn">⟳ Сброс на стандарт</button>
-    </div>
-    <div class="small" style="margin:8px 0;">Блоки выполняются по порядку. Выделяй строки кликом. Пресет «1‑4‑2 из X секунд» автоматически ставит задержку = 4×X и выдох = 2×X.</div>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:3%"></th>
-          <th style="width:18%">Название</th>
-          <th style="width:12%">Тип</th>
-          <th style="width:10%">Минуты/Циклы</th>
-          <th style="width:9%">Вдох</th>
-          <th style="width:9%">Задержка</th>
-          <th style="width:9%">Выдох</th>
-          <th style="width:10%">Цикл (с)</th>
-          <th style="width:10%">Дых./24 мин</th>
-          <th style="width:20%">Действия</th>
-        </tr>
-      </thead>
-      <tbody id="planBody"></tbody>
-    </table>
+  <div class="kpis">
+    <span class="pill">В блоке осталось: <b id="blockRemain">—</b></span>
+    <span class="pill">До конца сессии: <b id="totalRemain">—</b></span>
+    <span class="pill">Циклов завершено: <b id="cyclesDone">0</b></span>
   </div>
 
-  <div class="card">
-    <h2>Генератор «ступенчатого блока»</h2>
-    <div class="row">
-      <label>Пиковый вдох (сек): <input id="sbPeak" type="number" min="1" step="1" value="13" style="width:90px"></label>
-      <label>Жёстких циклов: <input id="sbHardCycles" type="number" min="1" step="1" value="3" style="width:90px"></label>
-      <label>Шаг снижения (сек): <input id="sbStep" type="number" min="1" step="1" value="1" style="width:90px"></label>
-      <label>Ступеней: <input id="sbSteps" type="number" min="1" step="1" value="2" style="width:90px"></label>
-      <label>Циклов на ступень: <input id="sbCyclesPerStep" type="number" min="1" step="1" value="3" style="width:120px"></label>
-      <button id="buildStepPlan" class="ok">Собрать после выбранного блока</button>
-    </div>
-    <div class="small">Пример: Пик 13 сек → 3 жёстких цикла на 13‑52‑26 → затем 2 ступени по −1 сек (12 и 11 сек), по 3 цикла на каждую. </div>
+  <div class="row">
+    <button id="startBtn" class="primary">▶️ Старт</button>
+    <button id="pauseBtn" disabled>⏸ Пауза</button>
+    <button id="resetBtn" disabled>⟲ Сброс</button>
+    <label class="tog"><input id="voiceOn" type="checkbox" checked> Голос</label>
+    <label class="tog"><input id="tonesOn" type="checkbox" checked> Тоны</label>
+    <label class="tog"><input id="vibeOn"  type="checkbox" checked> Вибро</label>
   </div>
 
-  <div class="card">
-    <h2>Автопрогрессия (гибкая)</h2>
-    <div class="row">
-      <label>Отслеживать пиковый вдох из генератора «ступеней»: <input type="checkbox" id="apTrack" checked></label>
-      <button id="apCheck" class="sec">Проверить прогресс сейчас</button>
-    </div>
-    <div class="small">Раз в неделю таймер предложит увеличить пиковый вдох на +1 сек (если согласишься, пересчитает ступени). Предложение запоминается в браузере.</div>
-  </div>
-
-  <div class="card" id="reportCard" style="display:none;">
-    <h2>Отчёт о сессии</h2>
-    <div class="kpi">
-      <div class="card"><div class="label">Общее время</div><div class="big mono" id="repTotal">00:00</div></div>
-      <div class="card"><div class="label">Циклов всего</div><div class="big mono" id="repCycles">0</div></div>
-      <div class="card"><div class="label">Пиковый вдох</div><div class="big mono" id="repPeak">0 c</div></div>
-      <div class="card"><div class="label">Средний цикл</div><div class="big mono" id="repAvg">0 c</div></div>
-    </div>
-    <div class="row" style="margin-top:10px;"><canvas id="chart"></canvas></div>
-  </div>
-
-  <div class="card small">
-    Если голос не слышно, выбери русскую озвучку в системе или перезагрузи страницу (после нажатия «Старт»). На iOS/Android звук активируется первым нажатием.
-  </div>
+  <div class="hint">Совет: на iPhone нажми «Старт», чтобы разрешить звук. Постараюсь удерживать экран от засыпания.</div>
 </div>
 
 <script>
-// --- JS code omitted here for brevity in this message due to length constraints ---
-// NOTE: This file is the same as we built earlier (v2) with presets, step generator, auto-progression and report.
-// To keep the assistant response compact, I'm not repeating the entire JS here, but the uploaded file includes it fully.
+const PLAN = [
+  { kind:"duration",   name:"Разминка", minutes:10, inhale:10, hold:40, exhale:20, announce:"Разминка. Вдох десять секунд." },
+  { kind:"patternDur", name:"Работа",   minutes:10, pattern:[
+      {inhale:11, hold:44, exhale:22},
+      {inhale:11, hold:44, exhale:22},
+      {inhale:12, hold:48, exhale:24},
+    ], announce:"Работа. Чередуем два цикла одиннадцать секунд и один цикл двенадцать секунд." },
+  { kind:"duration",   name:"Челлендж", minutes:5,  inhale:13, hold:52, exhale:26, announce:"Челлендж. Вдох тринадцать секунд." },
+  { kind:"cycles",     name:"Тест",     cycles:3,   inhale:14, hold:56, exhale:28, announce:"Тест. Вдох четырнадцать секунд." },
+];
+const TOTAL_TARGET_SEC = (10+10+5)*60 + 3*(14+56+28);
+
+// DOM
+const blockNameEl=document.getElementById('blockName');
+const countEl=document.getElementById('count');
+const phaseEl=document.getElementById('phase');
+const phaseFill=document.getElementById('phaseFill');
+const blockFill=document.getElementById('blockFill');
+const totalFill=document.getElementById('totalFill');
+const blockRemainEl=document.getElementById('blockRemain');
+const totalRemainEl=document.getElementById('totalRemain');
+const cyclesDoneEl=document.getElementById('cyclesDone');
+const startBtn=document.getElementById('startBtn');
+const pauseBtn=document.getElementById('pauseBtn');
+const resetBtn=document.getElementById('resetBtn');
+const voiceOn=document.getElementById('voiceOn');
+const tonesOn=document.getElementById('tonesOn');
+const vibeOn=document.getElementById('vibeOn');
+
+// utils
+function fmt(sec){sec=Math.max(0,Math.ceil(sec));const m=String(Math.floor(sec/60)).padStart(2,'0');const s=String(sec%60).padStart(2,'0');return `${m}:${s}`;}
+
+// tones
+let audioCtx;
+function beep(freq=660,ms=180){
+  if(!tonesOn.checked) return;
+  try{
+    audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+    const t=audioCtx.currentTime; g.gain.setValueAtTime(0.001,t); g.gain.exponentialRampToValueAtTime(0.2,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+ms/1000); o.start(t); o.stop(t+ms/1000+.02);
+  }catch(e){}
+}
+function phaseTone(n){ if(n==="Вдох")beep(440,200); else if(n==="Задержка")beep(660,160); else beep(520,180); }
+
+// speech
+function say(text){
+  if(!voiceOn.checked) return;
+  const u=new SpeechSynthesisUtterance(text);
+  const ru=speechSynthesis.getVoices().find(v=>/ru/i.test(v.lang));
+  if(ru) u.voice=ru; u.lang=ru?ru.lang:'ru-RU'; u.rate=0.9; u.pitch=0.95; u.volume=1;
+  try{ speechSynthesis.speak(u);}catch(e){}
+}
+
+// vibe
+function vib(ms=50){ if(vibeOn.checked && navigator.vibrate) navigator.vibrate(ms); }
+
+// wake lock
+let wakeLock=null;
+async function lockScreen(){ try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){} }
+
+// state
+let running=false, paused=false, timerId=null;
+let blockIdx=0, patternIdx=0, phaseIdx=0;
+let phaseLeft=0, phaseTotal=0;
+let blockLeft=0, blockTotal=0;
+let totalElapsed=0, cyclesDone=0;
+const PHASES=["Вдох","Задержка","Выдох"];
+
+function setPhase(name,sec){
+  phaseEl.textContent=name; phaseLeft=sec; phaseTotal=sec;
+  countEl.textContent=fmt(phaseLeft); phaseFill.style.width='0%';
+  phaseTone(name); say(name); vib(40);
+}
+function getDurationsForCurrentCycle(){
+  const b=PLAN[blockIdx];
+  if(b.kind==="patternDur"){ return b.pattern[patternIdx % b.pattern.length]; }
+  return { inhale:b.inhale, hold:b.hold, exhale:b.exhale };
+}
+function startBlock(i){
+  const b=PLAN[i];
+  blockNameEl.textContent=b.name;
+  blockLeft = (b.kind==="cycles") ? 0 : Math.round((b.minutes||0)*60);
+  blockTotal=blockLeft; phaseIdx=0; patternIdx=0;
+  say(b.announce || b.name);
+  const d=getDurationsForCurrentCycle(); setPhase("Вдох", d.inhale);
+  updateHUD();
+}
+function nextPhaseOrCycle(){
+  const b=PLAN[blockIdx];
+  phaseIdx=(phaseIdx+1)%3;
+  const d=getDurationsForCurrentCycle();
+  const seconds=[d.inhale,d.hold,d.exhale][phaseIdx];
+  setPhase(PHASES[phaseIdx], seconds);
+}
+function endOfCycle(){
+  cyclesDone+=1; cyclesDoneEl.textContent=String(cyclesDone);
+  const b=PLAN[blockIdx];
+  if(b.kind==="patternDur"){ patternIdx=(patternIdx+1)%b.pattern.length; }
+  if(b.kind==="cycles"){
+    b._cyclesLeft=(b._cyclesLeft??b.cycles)-1;
+    if(b._cyclesLeft<=0){ goNextBlock(); return; }
+  }
+  if((b.kind==="duration"||b.kind==="patternDur") && blockLeft<=0){ goNextBlock(); return; }
+}
+function goNextBlock(){
+  blockIdx+=1; if(blockIdx>=PLAN.length){ finishAll(); return; }
+  startBlock(blockIdx);
+}
+function finishAll(){
+  running=false; paused=false; clearTimeout(timerId);
+  startBtn.disabled=false; pauseBtn.disabled=true; resetBtn.disabled=false;
+  phaseEl.textContent="Готово"; countEl.textContent="00:00"; blockNameEl.textContent="Сессия завершена";
+  phaseFill.style.width=blockFill.style.width=totalFill.style.width='100%';
+  say("Пранаяма завершена."); vib(100);
+  if(wakeLock){ try{ wakeLock.release(); }catch(e){} }
+}
+function updateHUD(){
+  countEl.textContent=fmt(phaseLeft);
+  phaseFill.style.width=`${Math.max(0,Math.min(100,100*(1-phaseLeft/Math.max(1,phaseTotal))))}%`;
+  const b=PLAN[blockIdx];
+  let blockPct=0, blockTxt="—";
+  if(b.kind==="cycles"){
+    const left=b._cyclesLeft??b.cycles; blockTxt=left+" циклов"; blockPct=100*(1-left/Math.max(1,b.cycles));
+  }else{
+    blockTxt=fmt(Math.max(0,blockLeft)); blockPct=100*(1-blockLeft/Math.max(1,blockTotal));
+  }
+  blockFill.style.width=`${Math.max(0,Math.min(100,blockPct))}%`; blockRemainEl.textContent=blockTxt;
+  const totalRemain=Math.max(0,TOTAL_TARGET_SEC-totalElapsed);
+  totalRemainEl.textContent=fmt(totalRemain);
+  totalFill.style.width=`${Math.max(0,Math.min(100,100*totalElapsed/Math.max(1,TOTAL_TARGET_SEC)))}%`;
+}
+function tick(){
+  if(!running||paused) return;
+  phaseLeft-=1; totalElapsed+=1;
+  const b=PLAN[blockIdx]; if(b.kind!=="cycles"){ blockLeft=Math.max(0,blockLeft-1); }
+  updateHUD();
+  if(phaseLeft<=0){
+    if(phaseIdx===2){ endOfCycle(); if(!running) return; }
+    nextPhaseOrCycle();
+  }
+  timerId=setTimeout(tick,1000);
+}
+
+// controls
+function start(){
+  if(running) return;
+  try{ audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }catch(e){}
+  speechSynthesis.cancel();
+  running=true; paused=false;
+  startBtn.disabled=true; pauseBtn.disabled=false; resetBtn.disabled=false;
+  blockIdx=0; patternIdx=0; phaseIdx=0; totalElapsed=0; cyclesDone=0; cyclesDoneEl.textContent="0";
+  PLAN.forEach(b=> delete b._cyclesLeft);
+  lockScreen();
+  startBlock(0);
+  clearTimeout(timerId); timerId=setTimeout(tick,1000);
+}
+function pause(){ if(!running) return; paused=!paused; pauseBtn.textContent=paused?"▶️ Продолжить":"⏸ Пауза"; if(!paused){ clearTimeout(timerId); timerId=setTimeout(tick,1000);} }
+function reset(){
+  running=false; paused=false; clearTimeout(timerId);
+  startBtn.disabled=false; pauseBtn.disabled=true; resetBtn.disabled=true;
+  blockNameEl.textContent="—"; phaseEl.textContent="Готов";
+  phaseFill.style.width=blockFill.style.width=totalFill.style.width="0%";
+  countEl.textContent="00:00"; blockRemainEl.textContent="—"; totalRemainEl.textContent="—"; cyclesDoneEl.textContent="0";
+  speechSynthesis.cancel(); if(wakeLock){ try{ wakeLock.release(); }catch(e){} }
+}
+startBtn.addEventListener('click', start);
+pauseBtn.addEventListener('click', pause);
+resetBtn.addEventListener('click', reset);
+if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=()=>{}; }
 </script>
 </body>
 </html>
